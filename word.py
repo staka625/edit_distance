@@ -1,18 +1,21 @@
 from typing import List
+def word_edit_distance_by_str(test_str_split_by_char:str,ground_truth_by_char:str,split_char = " "):
+    print(test_str_split_by_char.split())
+    return word_edit_distance(test_str_split_by_char.split(),ground_truth_by_char.split())
+
 def word_edit_distance(test_list : List[str], ground_truth_list : List[str]):
+    elements_to_remove = [".",",","。","、"," ",",","\n"]
+    test_list = [x for x in test_list if x not in elements_to_remove]
     len_test_list = len(test_list)
     len_ground_truth_list = len(ground_truth_list)
     
-    # 2次元配列を初期化
     dp = [[0 for _ in range(len_ground_truth_list + 1)] for _ in range(len_test_list + 1)]
     
-    # 初期値を設定
     for i in range(len_test_list + 1):
         dp[i][0] = i
     for j in range(len_ground_truth_list + 1):
         dp[0][j] = j
     
-    # 編集距離と操作回数を計算
     for i in range(1, len_test_list + 1):
         for j in range(1, len_ground_truth_list + 1):
             if test_list[i - 1] == ground_truth_list[j - 1]:
@@ -22,10 +25,8 @@ def word_edit_distance(test_list : List[str], ground_truth_list : List[str]):
                                    dp[i][j - 1],      # 挿入
                                    dp[i - 1][j - 1])  # 置換
     
-    # 編集距離を返す
     edit_distance = dp[len_test_list][len_ground_truth_list]
     
-    # 置換、挿入、削除の回数を返す
     num_replace = num_insert = num_delete = 0
     i, j = len_test_list, len_ground_truth_list
     while i > 0 or j > 0:
@@ -44,9 +45,7 @@ def word_edit_distance(test_list : List[str], ground_truth_list : List[str]):
                 i -= 1
                 j -= 1
     
-    # 誤り率を計算
     edit_distance = dp[len_test_list][len_ground_truth_list]
     error_rate = (edit_distance / len_test_list)
     
-    # 編集距離、削除、置換、挿入回数、誤り率を返す
     return edit_distance, num_replace, num_insert, num_delete, error_rate
